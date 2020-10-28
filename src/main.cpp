@@ -1,5 +1,5 @@
 #include "Pokitto.h"
-#include "USBSerial.h"
+//#include "USBSerial.h"
 #include "MCP23S17.h"
 #include "SPISlave.h"
 
@@ -8,13 +8,14 @@
 
 Pokitto::Core mygame;
 
-USBSerial pc;
+//USBSerial pc;
 SPI spi(P1_22, P1_21, P1_20, P1_23);
 MCP23S17 chip = MCP23S17(spi, P1_23, 0x40);
 MCP23S17 chip2 = MCP23S17(spi, P1_23, 0x42);
-
+// WR Chip2 GPB1
 
 int main () {
+    chip2.direction(PORT_B, 0x00);
     chip2.direction(PORT_A, 0xFF);
 
     uint32_t address = 0;
@@ -25,9 +26,15 @@ int main () {
 
         if (mygame.update()) {
             mygame.display.print("Hello World!");
-            pc.printf("Pokitto ready\r\n");
+            mygame.display.print(mygame.getTime());
+            //pc.printf("Pokitto ready\r\n");
             char a=chip2.read(PORT_A);
-            pc.printf("%d",a);
+            //pc.printf("%d",a);
+            chip2.write(PORT_B, 0xFF);
+                    wait(3);
+
+            chip2.write(PORT_B, 0x00);
+        wait(3);
 
            }
         }
